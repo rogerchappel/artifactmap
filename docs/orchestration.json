@@ -1,0 +1,23 @@
+{
+  "project": "artifactmap",
+  "version": 1,
+  "commands": {
+    "install": "npm install",
+    "test": "npm test",
+    "check": "npm run check",
+    "build": "npm run build",
+    "smoke": "npm run smoke",
+    "validate": "bash scripts/validate.sh",
+    "fixtureSmoke": "node dist/cli.js scan examples/fixtures/messy --format json --no-respect-ignore"
+  },
+  "artifacts": {
+    "defaultConfig": "artifactmap.config.json",
+    "markdownReport": "docs/ARTIFACTS.md",
+    "jsonReport": "artifactmap-report.json"
+  },
+  "failurePolicy": {
+    "ci": "suspicious",
+    "release": "warning",
+    "localDefault": "none"
+  }
+}
