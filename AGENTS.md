@@ -5,10 +5,10 @@ This file defines how AI agents and human maintainers should work in `artifactma
 ## Project Context
 
 - Project: `artifactmap`
-- Repository: ``
+- Repository: `https://github.com/rogerchappel/artifactmap`
 - Primary maintainer: ``
-- Default branch: ``
-- Package manager: ``
+- Default branch: `main`
+- Package manager: `npm`
 - Primary verification command: `bash scripts/validate.sh`
 
 ## Core Principle
@@ -173,4 +173,6 @@ Never commit secrets. Never mutate production data unless explicitly instructed.
 
 ## Repository-Specific Notes
 
-
+- This CLI is local-first. Do not add telemetry, hidden network calls, or automatic deletion.
+- Keep parser, scanner, renderer, and CLI behavior covered by fixture-backed tests.
+- Use `examples/fixtures` for regression cases rather than relying only on mocks.
