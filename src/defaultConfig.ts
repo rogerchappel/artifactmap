@@ -1,0 +1,44 @@
+import type { ArtifactMapConfig } from './types.js';
+
+export const DEFAULT_CONFIG: ArtifactMapConfig = {
+  version: 1,
+  largeFileBytes: 5 * 1024 * 1024,
+  staleReportDays: 30,
+  includeUnknown: false,
+  rules: [
+    {
+      kind: 'generated-commit',
+      patterns: ['dist/**', 'build/**', 'lib/**', '*.map'],
+      commit: true,
+      description: 'Build outputs that may be committed for package consumers.'
+    },
+    {
+      kind: 'generated-ignore',
+      patterns: ['coverage/**', '.nyc_output/**', '.turbo/**', '.next/**'],
+      commit: false,
+      description: 'Generated outputs that should usually stay ignored.'
+    },
+    {
+      kind: 'cache',
+      patterns: ['node_modules/**', '.cache/**', '.parcel-cache/**', '.vite/**', '.eslintcache'],
+      commit: false,
+      description: 'Dependency and tool caches.'
+    },
+    {
+      kind: 'report',
+      patterns: ['docs/**/*REPORT*.md', 'docs/**/ARTIFACTS.md', 'reports/**', 'coverage/lcov-report/**'],
+      commit: true,
+      description: 'Review evidence, generated reports, or release notes.'
+    },
+    {
+      kind: 'package',
+      patterns: ['*.tgz', '*.zip', '*.tar.gz', 'package/**'],
+      commit: false,
+      description: 'Packed release artifacts and archive outputs.'
+    }
+  ]
+};
+
+export function createDefaultConfig(): ArtifactMapConfig {
+  return JSON.parse(JSON.stringify(DEFAULT_CONFIG)) as ArtifactMapConfig;
+}
