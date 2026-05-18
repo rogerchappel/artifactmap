@@ -7,6 +7,14 @@
   "bin": {
     "artifactmap": "./dist/cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rogerchappel/artifactmap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rogerchappel/artifactmap/issues"
+  },
+  "homepage": "https://github.com/rogerchappel/artifactmap#readme",
   "exports": {
     ".": "./dist/index.js"
   },
