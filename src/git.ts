@@ -16,11 +16,13 @@ export async function readGitState(root: string): Promise<GitState> {
   if (!inside.ok || inside.stdout.trim() !== 'true') {
     return emptyGitState(false);
   }
+  const topLevel = await git(root, ['rev-parse', '--show-toplevel']);
+  const pathspec = topLevel.ok && topLevel.stdout.trim() !== root ? ['--', '.'] : [];
 
   const [tracked, trackedIgnored, untracked] = await Promise.all([
-    git(root, ['ls-files', '-z']),
-    git(root, ['ls-files', '-z', '-ci', '--exclude-standard']),
-    git(root, ['ls-files', '-z', '--others', '--exclude-standard'])
+    git(root, ['ls-files', '-z', ...pathspec]),
+    git(root, ['ls-files', '-z', '-ci', '--exclude-standard', ...pathspec]),
+    git(root, ['ls-files', '-z', '--others', '--exclude-standard', ...pathspec])
   ]);
 
   return {
@@ -41,7 +43,7 @@ function emptyGitState(available: boolean): GitState {
 }
 
 function parseNul(output: string): string[] {
-  return sortPaths(output.split('\0').filter(Boolean));
+  return sortPaths(output.split('\0').filter(Boolean).map((item) => item.replace(/^\.\//, '')));
 }
 
 async function git(root: string, args: string[]): Promise<{ ok: boolean; stdout: string }> {
