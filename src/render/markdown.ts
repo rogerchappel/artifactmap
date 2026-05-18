@@ -55,7 +55,7 @@ export function renderMarkdown(report: ScanReport): string {
     lines.push('| ' + code(artifact.path) + ' | ' + code(artifact.kind) + ' | ' + yesNo(artifact.tracked) + ' | ' + yesNo(artifact.ignored) + ' | ' + evidenceText(artifact) + ' |');
   }
 
-  return lines.join('\\n') + '\\n';
+  return lines.join('\n') + '\n';
 }
 
 function totalFindings(report: ScanReport): number {
@@ -82,7 +82,7 @@ function evidenceText(artifact: ArtifactRecord): string {
 }
 
 function escapeTable(value: string): string {
-  return value.replace(/\\|/g, '\\\\|');
+  return value.replace(/\|/g, '\\|');
 }
 
 function code(value: string): string {

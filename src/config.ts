@@ -22,7 +22,7 @@ export async function loadConfig(root: string, configPath?: string): Promise<Art
 
 export async function writeDefaultConfig(root: string, configPath = CONFIG_FILE): Promise<string> {
   const destination = path.resolve(root, configPath);
-  await writeFile(destination, JSON.stringify(createDefaultConfig(), null, 2) + '\\n', 'utf8');
+  await writeFile(destination, JSON.stringify(createDefaultConfig(), null, 2) + '\n', 'utf8');
   return destination;
 }
 
