@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+.artifactmap-smoke/
+*.tgz
+*.log
+.DS_Store
