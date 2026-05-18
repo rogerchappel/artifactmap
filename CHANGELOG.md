@@ -9,7 +9,11 @@ format and uses semantic versioning when versioned releases are published.
 
 ### Added
 
-- Initial project setup.
+- Initial StackForge project setup.
+- `artifactmap scan` with Markdown and JSON output.
+- `artifactmap init --preset node-cli` for default policy creation.
+- Default artifact policy config.
+- Fixture-backed tests and smoke validation.
 
 ## Release Links
 
