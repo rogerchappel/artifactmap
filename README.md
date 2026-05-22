@@ -7,13 +7,22 @@ It is local-first: no telemetry, no network calls during scans, and no automatic
 ## Install
 
 ```bash
-npm install
-npm run build
+npm install artifactmap
 ```
 
-After publication, use it with npx:
+Scan a repo with the installed binary:
 
 ```bash
+npx artifactmap scan . --out docs/ARTIFACTS.md
+```
+
+For local development:
+
+```bash
+git clone https://github.com/rogerchappel/artifactmap.git
+cd artifactmap
+npm install
+npm run build
 npx artifactmap scan . --out docs/ARTIFACTS.md
 ```
 
