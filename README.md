@@ -117,3 +117,14 @@ bash scripts/validate.sh
 ```
 
 The checked-in fixtures under examples/fixtures exercise clean and messy repository states.
+
+## Usage
+
+Inspect the available commands before running the CLI against a project:
+
+```sh
+npx artifactmap --help
+artifactmap --help
+```
+
+Use fixture or sample input from this repository first when evaluating changes, then run the same command against your target project.
