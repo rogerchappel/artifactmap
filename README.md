@@ -52,6 +52,19 @@ Fail when suspicious findings are present:
 artifactmap scan . --format json --fail-on suspicious
 ```
 
+## Runnable demo
+
+Generate Markdown and JSON artifact evidence from the checked-in messy fixture:
+
+```bash
+npm run build
+bash demo/run-messy-fixture-scan.sh
+```
+
+See [docs/tutorials/map-a-messy-fixture.md](docs/tutorials/map-a-messy-fixture.md)
+for the walkthrough and [docs/promo/messy-fixture-brief.md](docs/promo/messy-fixture-brief.md)
+for a short recording outline.
+
 ## What It Detects
 
 ArtifactMap labels files as:
