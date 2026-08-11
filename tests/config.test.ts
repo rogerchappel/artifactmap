@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -75,6 +75,28 @@ test('rejects invalid rule kinds and pattern shapes before scanning', async () =
 
   await writeConfig(root, { rules: [{ kind: 'package', patterns: ['*.tgz', 42] }] });
   await assert.rejects(loadConfig(root), /Invalid configuration field "rules\[0\]\.patterns\[1\]": expected a string\./);
+});
+
+test('creates parent directories for a nested config path', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'artifactmap-config-'));
+  const destination = await writeDefaultConfig(root, 'nested/policy/artifactmap.config.json');
+
+  assert.equal(destination, path.join(root, 'nested/policy/artifactmap.config.json'));
+  assert.match(await readFile(destination, 'utf8'), /"version": 1/);
+});
+
+test('refuses to overwrite an existing config and preserves its bytes', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'artifactmap-config-'));
+  const destination = path.join(root, 'nested/artifactmap.config.json');
+  const existing = Buffer.from('{"sentinel":true}\n');
+  await mkdir(path.dirname(destination), { recursive: true });
+  await writeFile(destination, existing);
+
+  await assert.rejects(
+    writeDefaultConfig(root, 'nested/artifactmap.config.json'),
+    /Config already exists at .*artifactmap\.config\.json; choose a different --out path or remove it first/
+  );
+  assert.deepEqual(await readFile(destination), existing);
 });
 
 async function writeConfig(root: string, config: unknown): Promise<void> {
