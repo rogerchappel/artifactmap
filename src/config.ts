@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createDefaultConfig } from './defaultConfig.js';
 import type { ArtifactKind, ArtifactMapConfig, ArtifactPolicyRule } from './types.js';
@@ -22,7 +22,21 @@ export async function loadConfig(root: string, configPath?: string): Promise<Art
 
 export async function writeDefaultConfig(root: string, configPath = CONFIG_FILE): Promise<string> {
   const destination = path.resolve(root, configPath);
-  await writeFile(destination, JSON.stringify(createDefaultConfig(), null, 2) + '\n', 'utf8');
+  await mkdir(path.dirname(destination), { recursive: true });
+
+  try {
+    await writeFile(destination, JSON.stringify(createDefaultConfig(), null, 2) + '\n', {
+      encoding: 'utf8',
+      flag: 'wx'
+    });
+  } catch (error) {
+    if (isAlreadyExists(error)) {
+      throw new Error(`Config already exists at ${destination}; choose a different --out path or remove it first.`);
+    }
+
+    throw error;
+  }
+
   return destination;
 }
 
@@ -118,4 +132,8 @@ function invalid(field: string, expectation: string): never {
 
 function isNotFound(error: unknown): boolean {
   return error instanceof Error && 'code' in error && error.code === 'ENOENT';
+}
+
+function isAlreadyExists(error: unknown): boolean {
+  return error instanceof Error && 'code' in error && error.code === 'EEXIST';
 }

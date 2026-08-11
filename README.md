@@ -34,6 +34,12 @@ Create a reviewable policy:
 artifactmap init --preset node-cli
 ```
 
+Use `--out` to create the policy in a nested directory; missing parent directories are created automatically. `init` never overwrites an existing file: choose another `--out` path or remove the existing config first.
+
+```bash
+artifactmap init --out config/policies/artifactmap.config.json
+```
+
 Scan a workspace and write Markdown:
 
 ```bash
