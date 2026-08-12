@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import path from 'node:path';
+import os from 'node:os';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { scanWorkspace } from '../src/scanner.js';
 
 const fixtureRoot = path.resolve('examples/fixtures/messy');
@@ -28,4 +30,19 @@ test('respects ignore rules by default while keeping tracked ignored files visib
 
   assert.equal(report.artifacts.some((artifact) => artifact.path === 'coverage/coverage-summary.json'), true);
   assert.equal(report.artifacts.some((artifact) => artifact.path === 'fixture-messy-1.0.0.tgz'), true);
+});
+
+test('scans generated artifacts in nested workspaces with the default policy', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'artifactmap-nested-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(path.join(root, 'packages/api/dist'), { recursive: true });
+  await mkdir(path.join(root, 'packages/api/coverage'), { recursive: true });
+  await writeFile(path.join(root, 'packages/api/dist/index.js'), 'export {}\n');
+  await writeFile(path.join(root, 'packages/api/coverage/coverage-summary.json'), '{}\n');
+
+  const report = await scanWorkspace({ root, respectIgnore: false });
+  const byPath = new Map(report.artifacts.map((artifact) => [artifact.path, artifact]));
+
+  assert.equal(byPath.get('packages/api/dist/index.js')?.kind, 'generated-commit');
+  assert.equal(byPath.get('packages/api/coverage/coverage-summary.json')?.kind, 'generated-ignore');
 });

@@ -21,7 +21,7 @@ export type Classification = {
 
 const SOURCE_EXTENSIONS = new Set(['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.py', '.go', '.rs', '.java', '.rb']);
 const REPORT_HINTS = [/report/i, /artifacts?\.md$/i, /coverage-summary\.json$/i];
-const SOURCE_LIKE_GENERATED_DIRS = /^(dist|build|lib|coverage|reports)\//;
+const SOURCE_LIKE_GENERATED_DIRS = /(?:^|\/)(?:dist|build|lib|coverage|reports)\//;
 
 export function classifyArtifact(input: ClassificationInput): Classification {
   const evidence: Evidence[] = [];
@@ -79,7 +79,7 @@ function inferKind(filePath: string, evidence: Evidence[]): ArtifactKind | undef
     return 'report';
   }
 
-  if (/^(tmp|temp|cache|\.cache)\//.test(filePath)) {
+  if (/(?:^|\/)(?:tmp|temp|cache|\.cache)\//.test(filePath)) {
     evidence.push({ rule: 'directory', detail: 'Path is under a cache or temporary directory.' });
     return 'cache';
   }
