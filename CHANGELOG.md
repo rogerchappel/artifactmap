@@ -15,6 +15,11 @@ format and uses semantic versioning when versioned releases are published.
 - Default artifact policy config.
 - Fixture-backed tests and smoke validation.
 
+### Changed
+
+- Tag releases publish the verified package tarball to npm before attaching the same artifact to a
+  GitHub release.
+
 ## Release Links
 
 - Unreleased:

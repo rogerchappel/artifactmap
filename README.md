@@ -137,6 +137,21 @@ bash scripts/validate.sh
 
 The checked-in fixtures under examples/fixtures exercise clean and messy repository states.
 
+### Release verification
+
+Before tagging a release, reproduce the release gate and inspect the package manifest locally:
+
+```bash
+npm ci
+npm run release:check
+npm pack --dry-run --json
+```
+
+Tags matching `v*.*.*` trigger the release workflow. It builds exactly one tarball, verifies the
+resolved filename, publishes that tarball to npm with public access and provenance, and only then
+creates the GitHub release with the same tarball attached. If npm publication fails, the workflow
+does not create a GitHub release.
+
 ## Usage
 
 Inspect the available commands before running the CLI against a project:
