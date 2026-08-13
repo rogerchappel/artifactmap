@@ -96,17 +96,22 @@ Findings currently include tracked ignored files, untracked package archives, st
   "rules": [
     {
       "kind": "generated-commit",
-      "patterns": ["dist/**", "build/**", "lib/**", "*.map"],
+      "patterns": ["**/dist/**", "**/build/**", "**/lib/**", "**/*.map"],
       "commit": true
     },
     {
       "kind": "generated-ignore",
-      "patterns": ["coverage/**", ".next/**"],
+      "patterns": ["**/coverage/**", "**/.next/**"],
       "commit": false
     }
   ]
 }
 ```
+
+Patterns match paths relative to the scanned repository. A leading `**/` matches both
+the repository root and nested workspaces, so `**/dist/**` covers `dist/index.js` and
+`packages/api/dist/index.js`. Use a root-only pattern such as `dist/**` when nested
+workspace output should not match.
 
 ## Safety Model
 
