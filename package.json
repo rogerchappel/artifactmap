@@ -33,7 +33,8 @@
     "test": "tsx --test tests/*.test.ts",
     "smoke": "bash scripts/smoke.sh",
     "package:smoke": "npm run build && npm pack --dry-run",
-    "release:check": "npm test && npm run check && npm run build && npm run smoke && npm run package:smoke",
+    "docs:check": "node scripts/check-readme-install.mjs",
+    "release:check": "npm test && npm run check && npm run build && npm run smoke && npm run package:smoke && npm run docs:check",
     "lint": "npm run check"
   },
   "keywords": [
