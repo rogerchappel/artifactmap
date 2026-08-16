@@ -6,24 +6,29 @@ It is local-first: no telemetry, no network calls during scans, and no automatic
 
 ## Install
 
-```bash
-npm install artifactmap
-```
-
-Scan a repo with the installed binary:
-
-```bash
-npx artifactmap scan . --out docs/ARTIFACTS.md
-```
-
-For local development:
+ArtifactMap is not published to the npm registry yet. Install the current source through the same tarball flow used by release verification:
 
 ```bash
 git clone https://github.com/rogerchappel/artifactmap.git
 cd artifactmap
-npm install
+npm ci
 npm run build
-npx artifactmap scan . --out docs/ARTIFACTS.md
+npm pack
+npm install --global ./artifactmap-0.1.0.tgz
+```
+
+Confirm the installed CLI, then scan a repository:
+
+```bash
+artifactmap --help
+artifactmap scan /path/to/repository --out /path/to/repository/docs/ARTIFACTS.md
+```
+
+After ArtifactMap is published to npm, the registry workflow will be:
+
+```bash
+npm install --global artifactmap
+artifactmap scan . --out docs/ARTIFACTS.md
 ```
 
 ## Quick Start
