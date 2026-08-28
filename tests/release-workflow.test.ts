@@ -30,3 +30,25 @@ test('release publishes the verified package before creating the GitHub release'
   assert.doesNotMatch(workflow, /npm (?:publish|release)[^\n]*\*\.tgz/);
   assert.doesNotMatch(workflow, /gh release create[^\n]*\*\.tgz/);
 });
+
+test('release installs and verifies a trusted publishing npm CLI before dependencies', async () => {
+  const workflow = await readFile(workflowPath, 'utf8');
+  const version = workflow.match(/^  NPM_VERSION: (\d+\.\d+\.\d+)$/m)?.[1];
+  const installCli = workflow.indexOf('npm install --global "npm@$NPM_VERSION"');
+  const verifyCli = workflow.indexOf('test "$(npm --version)" = "$NPM_VERSION"');
+  const installDependencies = workflow.indexOf('run: npm ci');
+  const publish = workflow.indexOf(
+    'npm publish "${{ steps.package.outputs.file }}" --access public --provenance',
+  );
+
+  assert.ok(version, 'release workflow must pin an exact npm CLI version');
+  assert.ok(
+    Number(version.split('.')[0]) >= 11,
+    'trusted publishing requires an npm CLI version with OIDC support',
+  );
+  assert.notEqual(installCli, -1, 'release workflow must install the pinned npm CLI');
+  assert.notEqual(verifyCli, -1, 'release workflow must verify the resolved npm CLI version');
+  assert.ok(installCli < verifyCli, 'npm CLI verification must follow installation');
+  assert.ok(verifyCli < installDependencies, 'the verified npm CLI must install dependencies');
+  assert.ok(installDependencies < publish, 'dependency installation must precede npm publication');
+});

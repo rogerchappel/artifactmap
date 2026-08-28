@@ -11,6 +11,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NPM_VERSION: 11.6.2
   RELEASEBOX_REF: v0.1.0
 
 jobs:
@@ -25,6 +26,11 @@ jobs:
           node-version: 22
           cache: npm
           registry-url: https://registry.npmjs.org
+      - name: Install trusted publishing npm CLI
+        run: |
+          set -euo pipefail
+          npm install --global "npm@$NPM_VERSION"
+          test "$(npm --version)" = "$NPM_VERSION"
       - name: Install dependencies
         run: npm ci
       - name: Install ReleaseBox
