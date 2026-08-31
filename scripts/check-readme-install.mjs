@@ -8,6 +8,7 @@ export const isPublishedResponse = (response) => Boolean(response && typeof resp
 export function checkReadme(readme, published) {
   const errors = [];
   const unpublished = 'ArtifactMap is not published to the npm registry yet.';
+  const codeBlocks = [...readme.matchAll(/```[^\n]*\n([\s\S]*?)```/g)].map((match) => match[1]).join('\n');
   if (published) {
     if (readme.includes(unpublished)) errors.push('README still says the package is unpublished');
     if (!readme.includes('npm install --global artifactmap')) errors.push('README lacks the registry install command');
@@ -15,6 +16,7 @@ export function checkReadme(readme, published) {
     if (!readme.includes(unpublished)) errors.push('README must state that the package is unpublished');
     if (!readme.includes('npm install --global ./artifactmap-0.1.0.tgz')) errors.push('README lacks the source-tarball install command');
     if (!readme.includes('After ArtifactMap is published to npm')) errors.push('README must mark registry commands as post-publication');
+    if (/^\s*(?:\$\s*)?npx(?:\s+--yes)?\s+artifactmap(?:\s|$)/m.test(codeBlocks)) errors.push('README must not use npx artifactmap while the package is unpublished');
   }
   return errors;
 }
