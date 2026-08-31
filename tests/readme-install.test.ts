@@ -16,6 +16,17 @@ test('rejects registry-first instructions while unpublished', () => {
   assert.match(checkReadme('npm install --global artifactmap', false).join('\n'), /unpublished/);
 });
 
+test('rejects active npx usage while unpublished', () => {
+  const readme = `${sourceReadme}
+Inspect the CLI:
+
+\`\`\`sh
+npx artifactmap --help
+\`\`\``;
+
+  assert.match(checkReadme(readme, false).join('\n'), /npx artifactmap/);
+});
+
 test('recognizes published response and rejects stale unpublished notice', () => {
   assert.equal(isPublishedResponse({ version: '0.1.0' }), true);
   assert.match(checkReadme(sourceReadme, true).join('\n'), /still says/);
