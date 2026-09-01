@@ -21,14 +21,18 @@ ArtifactMap is designed for local agents and human maintainers that need a deter
 
 ## CI Gate
 
-Recommended CI command:
+Until ArtifactMap is published to npm, install the source-built tarball using the
+[repository installation steps](../README.md#install). Then run the installed CLI in CI:
 
 ```bash
-npx artifactmap scan . --format json --fail-on suspicious
+artifactmap scan . --format json --fail-on suspicious
 ```
 
 For repositories that commit generated reports, write the Markdown report and review it like any other generated evidence:
 
 ```bash
-npx artifactmap scan . --out docs/ARTIFACTS.md
+artifactmap scan . --out docs/ARTIFACTS.md
 ```
+
+After ArtifactMap is published to npm, `npx artifactmap` can be used without the
+source-tarball installation step.
