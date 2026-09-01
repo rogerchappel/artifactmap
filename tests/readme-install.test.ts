@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { checkReadme, isPublishedResponse } from '../scripts/check-readme-install.mjs';
+import { checkInstallationDocs, checkReadme, isPublishedResponse } from '../scripts/check-readme-install.mjs';
 
 const sourceReadme = `ArtifactMap is not published to the npm registry yet.
 npm install --global ./artifactmap-0.1.0.tgz
@@ -25,6 +25,24 @@ npx artifactmap --help
 \`\`\``;
 
   assert.match(checkReadme(readme, false).join('\n'), /npx artifactmap/);
+});
+
+test('checks active npx usage in every maintained installation document', () => {
+  const documents = {
+    'README.md': sourceReadme,
+    'docs/ORCHESTRATION.md': `Recommended CI command:\n\n\`\`\`bash\nnpx artifactmap scan .\n\`\`\``,
+  };
+
+  assert.match(checkInstallationDocs(documents, false).join('\n'), /docs\/ORCHESTRATION\.md.*npx artifactmap/);
+});
+
+test('accepts installed CLI commands across maintained installation documents', () => {
+  const documents = {
+    'README.md': sourceReadme,
+    'docs/ORCHESTRATION.md': `Recommended CI command:\n\n\`\`\`bash\nartifactmap scan .\n\`\`\``,
+  };
+
+  assert.deepEqual(checkInstallationDocs(documents, false), []);
 });
 
 test('recognizes published response and rejects stale unpublished notice', () => {

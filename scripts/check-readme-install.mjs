@@ -21,6 +21,20 @@ export function checkReadme(readme, published) {
   return errors;
 }
 
+export function checkInstallationDocs(documents, published) {
+  const errors = checkReadme(documents['README.md'] ?? '', published);
+  if (published) return errors;
+
+  for (const [path, contents] of Object.entries(documents)) {
+    if (path === 'README.md') continue;
+    const codeBlocks = [...contents.matchAll(/```[^\n]*\n([\s\S]*?)```/g)].map((match) => match[1]).join('\n');
+    if (/^\s*(?:\$\s*)?npx(?:\s+--yes)?\s+artifactmap(?:\s|$)/m.test(codeBlocks)) {
+      errors.push(`${path} must not use npx artifactmap while the package is unpublished`);
+    }
+  }
+  return errors;
+}
+
 function registryResponse() {
   if (process.env.ARTIFACTMAP_REGISTRY_RESPONSE) return JSON.parse(process.env.ARTIFACTMAP_REGISTRY_RESPONSE);
   try {
@@ -31,7 +45,11 @@ function registryResponse() {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const published = isPublishedResponse(registryResponse());
-  const errors = checkReadme(readFileSync('README.md', 'utf8'), published);
+  const documents = {
+    'README.md': readFileSync('README.md', 'utf8'),
+    'docs/ORCHESTRATION.md': readFileSync('docs/ORCHESTRATION.md', 'utf8'),
+  };
+  const errors = checkInstallationDocs(documents, published);
   if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
   console.log(`README installation instructions match the ${published ? 'published' : 'unpublished'} registry state.`);
 }
