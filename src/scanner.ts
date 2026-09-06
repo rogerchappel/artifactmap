@@ -27,7 +27,15 @@ export async function scanWorkspace(options: ScanOptions): Promise<ScanReport> {
   for (const ignoredTrackedPath of git.trackedIgnored) {
     if (!entriesByPath.has(ignoredTrackedPath)) {
       const absolutePath = path.join(root, ignoredTrackedPath);
-      const fileStat = await stat(absolutePath);
+      const fileStat = await stat(absolutePath).catch((error: unknown) => {
+        if (isMissingFileError(error)) {
+          return undefined;
+        }
+        throw error;
+      });
+      if (!fileStat) {
+        continue;
+      }
       entriesByPath.set(ignoredTrackedPath, {
         absolutePath,
         path: ignoredTrackedPath,
@@ -55,6 +63,10 @@ export async function scanWorkspace(options: ScanOptions): Promise<ScanReport> {
     artifacts,
     policy: config
   };
+}
+
+function isMissingFileError(error: unknown): error is NodeJS.ErrnoException {
+  return error instanceof Error && 'code' in error && error.code === 'ENOENT';
 }
 
 function toArtifact(

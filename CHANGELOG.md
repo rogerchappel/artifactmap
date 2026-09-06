@@ -20,6 +20,10 @@ format and uses semantic versioning when versioned releases are published.
 - Tag releases publish the verified package tarball to npm before attaching the same artifact to a
   GitHub release.
 
+### Fixed
+
+- Skip tracked ignored paths that have been deleted from the worktree while scanning.
+
 ## Release Links
 
 - Unreleased:
