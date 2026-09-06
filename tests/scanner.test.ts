@@ -40,6 +40,24 @@ test('respects ignore rules by default while keeping tracked ignored files visib
   assert.equal(report.artifacts.some((artifact) => artifact.path === 'fixture-messy-1.0.0.tgz'), true);
 });
 
+test('skips tracked ignored files deleted from the worktree', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'artifactmap-deleted-tracked-ignore-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await execFileAsync('git', ['init', '--quiet', root]);
+  await writeFile(path.join(root, '.gitignore'), '*.tgz\n');
+  await writeFile(path.join(root, 'stale.tgz'), 'stale package\n');
+  await execFileAsync('git', ['-C', root, 'add', '.gitignore']);
+  await execFileAsync('git', ['-C', root, 'add', '--force', 'stale.tgz']);
+  await rm(path.join(root, 'stale.tgz'));
+
+  const report = await scanWorkspace({
+    root,
+    now: new Date('2026-05-18T00:00:00Z')
+  });
+
+  assert.equal(report.artifacts.some((artifact) => artifact.path === 'stale.tgz'), false);
+});
+
 test('respects ignore rules outside a Git worktree', async (t) => {
   const root = await copyFixture('artifactmap-non-git-fixture-');
   t.after(() => rm(root, { recursive: true, force: true }));
