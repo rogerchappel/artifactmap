@@ -34,7 +34,7 @@ export function classifyArtifact(input: ClassificationInput): Classification {
 
   if (!kind && input.ignored) {
     kind = 'generated-ignore';
-    evidence.push({ rule: 'ignore', detail: 'Ignored by .gitignore or .npmignore.' });
+    evidence.push({ rule: 'ignore', detail: 'Ignored by .gitignore.' });
   }
 
   if (!kind && input.config.includeUnknown) {

@@ -22,6 +22,7 @@ format and uses semantic versioning when versioned releases are published.
 
 ### Fixed
 
+- Use `.gitignore`, not npm packaging exclusions, for default repository traversal so tracked workspace artifacts remain visible.
 - Skip tracked ignored paths that have been deleted from the worktree while scanning.
 
 ## Release Links

@@ -90,6 +90,11 @@ ArtifactMap labels files as:
 
 Findings currently include tracked ignored files, untracked package archives, stale reports, large files, and source-looking files inside generated folders.
 
+By default, repository traversal respects the root `.gitignore`. Git-tracked files
+that match Git ignore rules remain visible and receive ignored-tracked evidence.
+`.npmignore` controls package publication, so it does not hide files from a repository
+scan. Use `--no-respect-ignore` to include ordinary untracked Git-ignored files.
+
 ## Policy Example
 
 ```json
@@ -132,7 +137,7 @@ ArtifactMap only reads local files and writes reports or config files when asked
 
 ## Limitations
 
-ArtifactMap uses deterministic path and policy evidence, not full language build graph inference. Nested ignore handling is intentionally simple in the MVP; Git-tracked ignored files are still surfaced so releases can catch hygiene problems.
+ArtifactMap uses deterministic path and policy evidence, not full language build graph inference. Nested `.gitignore` handling is intentionally simple in the MVP; Git-tracked ignored files are still surfaced so releases can catch hygiene problems.
 
 ## Development
 
