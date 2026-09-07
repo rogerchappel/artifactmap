@@ -10,7 +10,7 @@ const ignore = require('ignore') as typeof import('ignore').default;
 export async function buildIgnoreMatcher(root: string): Promise<Ignore> {
   const matcher = ignore().add(DEFAULT_IGNORES);
 
-  for (const fileName of ['.gitignore', '.npmignore']) {
+  for (const fileName of ['.gitignore']) {
     const filePath = path.join(root, fileName);
     try {
       matcher.add(await readFile(filePath, 'utf8'));
