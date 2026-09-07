@@ -40,6 +40,28 @@ test('respects ignore rules by default while keeping tracked ignored files visib
   assert.equal(report.artifacts.some((artifact) => artifact.path === 'fixture-messy-1.0.0.tgz'), true);
 });
 
+test('uses Git ignore rules for traversal without treating npm packaging exclusions as scan ignores', async (t) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'artifactmap-ignore-sources-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await mkdir(path.join(root, 'reports'), { recursive: true });
+  await writeFile(path.join(root, '.gitignore'), 'git-only.tgz\n');
+  await writeFile(path.join(root, '.npmignore'), 'reports/\n');
+  await writeFile(path.join(root, 'reports/build-report.md'), '# Build report\n');
+  await writeFile(path.join(root, 'git-only.tgz'), 'ignored package\n');
+  await execFileAsync('git', ['init', '--quiet', root]);
+  await execFileAsync('git', ['-C', root, 'add', '.gitignore', '.npmignore', 'reports/build-report.md']);
+
+  const report = await scanWorkspace({ root });
+  const reportArtifact = report.artifacts.find((artifact) => artifact.path === 'reports/build-report.md');
+  assert.equal(reportArtifact?.kind, 'report');
+  assert.equal(reportArtifact?.tracked, true);
+  assert.equal(reportArtifact?.ignored, false);
+  assert.equal(report.artifacts.some((artifact) => artifact.path === 'git-only.tgz'), false);
+
+  const unfiltered = await scanWorkspace({ root, respectIgnore: false });
+  assert.equal(unfiltered.artifacts.some((artifact) => artifact.path === 'git-only.tgz'), true);
+});
+
 test('skips tracked ignored files deleted from the worktree', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'artifactmap-deleted-tracked-ignore-'));
   t.after(() => rm(root, { recursive: true, force: true }));
