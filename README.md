@@ -178,3 +178,4 @@ artifactmap --help
 This command uses the CLI installed from the source-built tarball in the [Install](#install) steps above. The registry-backed `npx artifactmap` form will become available after the package is published to npm.
 
 Use fixture or sample input from this repository first when evaluating changes, then run the same command against your target project.
+// This is a test change
