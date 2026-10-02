@@ -35,6 +35,11 @@ export function checkInstallationDocs(documents, published) {
   return errors;
 }
 
+export function maintainedMarkdownPaths() {
+  const tracked = execFileSync('git', ['ls-files', '-z', '--', '*.md', '*.mdx'], { encoding: 'utf8' });
+  return tracked.split('\0').filter(Boolean).filter((path) => !path.startsWith('.github/'));
+}
+
 function registryResponse() {
   if (process.env.ARTIFACTMAP_REGISTRY_RESPONSE) return JSON.parse(process.env.ARTIFACTMAP_REGISTRY_RESPONSE);
   try {
@@ -45,10 +50,7 @@ function registryResponse() {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const published = isPublishedResponse(registryResponse());
-  const documents = {
-    'README.md': readFileSync('README.md', 'utf8'),
-    'docs/ORCHESTRATION.md': readFileSync('docs/ORCHESTRATION.md', 'utf8'),
-  };
+  const documents = Object.fromEntries(maintainedMarkdownPaths().map((path) => [path, readFileSync(path, 'utf8')]));
   const errors = checkInstallationDocs(documents, published);
   if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
   console.log(`README installation instructions match the ${published ? 'published' : 'unpublished'} registry state.`);
