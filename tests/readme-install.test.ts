@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { checkInstallationDocs, checkReadme, isPublishedResponse } from '../scripts/check-readme-install.mjs';
+import { checkInstallationDocs, checkReadme, isPublishedResponse, maintainedMarkdownPaths } from '../scripts/check-readme-install.mjs';
 
 const sourceReadme = `ArtifactMap is not published to the npm registry yet.
 npm install --global ./artifactmap-0.1.0.tgz
@@ -48,4 +48,11 @@ test('accepts installed CLI commands across maintained installation documents', 
 test('recognizes published response and rejects stale unpublished notice', () => {
   assert.equal(isPublishedResponse({ version: '0.1.0' }), true);
   assert.match(checkReadme(sourceReadme, true).join('\n'), /still says/);
+});
+
+test('discovers tracked maintained Markdown files beyond the original allowlist', () => {
+  const paths = maintainedMarkdownPaths();
+  assert.ok(paths.includes('docs/README.md'));
+  assert.ok(paths.includes('CONTRIBUTING.md'));
+  assert.ok(!paths.includes('.github/pull_request_template.md'));
 });
